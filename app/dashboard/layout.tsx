@@ -1,34 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  Map as MapIcon, 
-  Settings, 
-  BarChart3, 
-  Zap, 
-  AlertTriangle, 
-  FileText,
+import {
+  AlertTriangle,
+  BarChart3,
   ChevronLeft,
   ChevronRight,
-  Menu,
-  Bell,
+  Cpu,
+  FileText,
+  LayoutDashboard,
+  Map as MapIcon,
   Search,
-  User,
-  Moon,
-  Sun
+  Settings,
+  Zap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Vue d'ensemble", href: "/dashboard" },
   { icon: MapIcon, label: "Sites", href: "/dashboard/sites" },
   { icon: Zap, label: "Liaisons", href: "/dashboard/links" },
   { icon: BarChart3, label: "Bilan de Liaison", href: "/dashboard/budget" },
-  { icon: AlertTriangle, label: "Analyse d'Interférence", href: "/dashboard/analysis" },
+  { icon: AlertTriangle, label: "Analyse d'interférence", href: "/dashboard/analysis" },
+  { icon: Cpu, label: "Inventaire", href: "/dashboard/inventory" },
   { icon: FileText, label: "Rapports", href: "/dashboard/reports" },
   { icon: Settings, label: "Paramètres", href: "/dashboard/settings" },
 ];
@@ -38,29 +36,39 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
 
   return (
-    <div className="flex h-screen bg-[#020617] text-slate-100 overflow-hidden">
-      {/* Sidebar */}
-      <aside 
+    <div className="flex h-screen bg-background text-foreground overflow-hidden">
+      <aside
         className={cn(
-          "relative h-full bg-[#0f172a] border-r border-slate-800 transition-all duration-300 flex flex-col",
-          collapsed ? "w-20" : "w-64"
+          "relative h-full bg-card border-r border-border transition-all duration-300 flex flex-col",
+          collapsed ? "w-20" : "w-64",
         )}
       >
-        <div className="p-6 flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold">T</div>
-          {!collapsed && <span className="font-bold text-xl tracking-tight">T.N.T</span>}
+        <div className="p-5 flex items-center gap-3">
+          <Image
+            src="/images/camrail-worker-icon.png"
+            alt="CAMRAIL"
+            width={38}
+            height={38}
+            className="rounded-md object-cover border border-border"
+          />
+          {!collapsed && (
+            <div>
+              <span className="block font-bold text-lg tracking-tight">CAMRAIL</span>
+              <span className="block text-xs text-muted-foreground">Connect</span>
+            </div>
+          )}
         </div>
 
         <nav className="flex-1 px-4 py-4 space-y-2">
           {sidebarItems.map((item) => (
-            <Link 
-              key={item.href} 
+            <Link
+              key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
-                pathname === item.href 
-                  ? "bg-primary text-primary-foreground" 
-                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
+                pathname === item.href
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               <item.icon className="w-5 h-5 shrink-0" />
@@ -69,53 +77,50 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           ))}
         </nav>
 
-        <button 
+        <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-4 border-t border-slate-800 flex items-center justify-center hover:bg-slate-800 transition-colors"
+          className="p-4 border-t border-border flex items-center justify-center hover:bg-muted transition-colors"
+          aria-label={collapsed ? "Ouvrir le menu" : "Réduire le menu"}
         >
           {collapsed ? <ChevronRight /> : <ChevronLeft />}
         </button>
       </aside>
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Navbar */}
-        <header className="h-16 bg-[#0f172a] border-b border-slate-800 flex items-center justify-between px-6">
+        <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6">
           <div className="flex items-center gap-4 flex-1">
             <div className="relative w-64 hidden md:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-              <input 
-                type="text" 
-                placeholder="Rechercher sites, liaisons..." 
-                className="w-full bg-slate-900 border border-slate-800 rounded-lg pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-all"
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Rechercher sites, liaisons..."
+                className="w-full bg-muted/40 border border-border rounded-md pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-all"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="text-slate-400">
-              <Bell className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="text-slate-400">
-              <Sun className="w-5 h-5" />
-            </Button>
-            <div className="h-8 w-px bg-slate-800 mx-2" />
+            <ThemeToggle />
+            <div className="h-8 w-px bg-border mx-1" />
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium">Paul Tsague</p>
-                <p className="text-xs text-slate-500">Ingénieur RF</p>
+                <p className="text-xs text-muted-foreground">Ingénieur RF</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
-                <User className="w-6 h-6" />
+              <div className="w-10 h-10 rounded-md bg-muted border border-border overflow-hidden">
+                <Image
+                  src="/images/camrail-worker-icon.png"
+                  alt="Profil local"
+                  width={40}
+                  height={40}
+                  className="h-full w-full object-cover"
+                />
               </div>
             </div>
           </div>
         </header>
 
-        {/* Page Area */}
-        <main className="flex-1 overflow-y-auto p-6">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
     </div>
   );

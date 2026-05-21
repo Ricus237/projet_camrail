@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
 import { 
-  Signal, 
   MapPin, 
   Zap, 
   Activity, 
   Plus, 
   Settings2, 
   BarChart, 
-  ChevronRight,
   Info
 } from "lucide-react";
 import { 
@@ -26,15 +23,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 
 // Mock Elevation Data Generator
 const generateElevationData = (siteA: string, siteB: string) => {
   const points = 50;
+  const routeSeed = Array.from(`${siteA}-${siteB}`).reduce(
+    (total, char) => total + char.charCodeAt(0),
+    0,
+  );
+  const distanceKm = 60 + (routeSeed % 220);
+  const phase = routeSeed % 17;
+
   return Array.from({ length: points }, (_, i) => {
-    const distance = (i / (points - 1)) * 242.5;
+    const distance = (i / (points - 1)) * distanceKm;
     // Generate a random-ish terrain with some hills
-    const baseElevation = 400 + Math.sin(i * 0.2) * 50 + Math.cos(i * 0.5) * 30;
+    const baseElevation =
+      400 + Math.sin((i + phase) * 0.2) * 50 + Math.cos((i + phase) * 0.5) * 30;
     return {
       distance: distance.toFixed(1),
       elevation: baseElevation,
@@ -58,10 +62,10 @@ export default function SimulationPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Simulation de Liaison Advanced</h1>
-          <p className="text-slate-500">Planifiez et testez vos configurations radio avec profil d'élévation.</p>
+          <p className="text-muted-foreground">Planifiez et testez vos configurations radio avec profil d&apos;élévation.</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="border-slate-800 bg-slate-900/50">
+          <Button variant="outline" className="border-border bg-muted/50">
             <Plus className="w-4 h-4 mr-2" /> Nouveau Site
           </Button>
           <Button className="bg-primary text-primary-foreground">
@@ -73,7 +77,7 @@ export default function SimulationPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Settings Panel */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="glass p-6 rounded-2xl border border-white/10 space-y-6">
+          <div className="glass p-6 rounded-2xl border border-border space-y-6">
             <div className="flex items-center gap-2 mb-2">
               <Settings2 className="w-5 h-5 text-primary" />
               <h3 className="font-bold">Configuration</h3>
@@ -82,7 +86,11 @@ export default function SimulationPage() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label>Site A (Origine)</Label>
-                <select className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+                <select
+                  value={siteA}
+                  onChange={(event) => setSiteA(event.target.value)}
+                  className="w-full bg-muted/50 border border-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                >
                   <option>Douala Port</option>
                   <option>Bafoussam Ville</option>
                   <option>Aéroport Garoua</option>
@@ -91,14 +99,18 @@ export default function SimulationPage() {
 
               <div className="space-y-2">
                 <Label>Site B (Destination)</Label>
-                <select className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+                <select
+                  value={siteB}
+                  onChange={(event) => setSiteB(event.target.value)}
+                  className="w-full bg-muted/50 border border-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                >
                   <option>Yaoundé Mvan</option>
                   <option>Univ Dschang</option>
                   <option>Falaise Ngaoundéré</option>
                 </select>
               </div>
 
-              <div className="h-px bg-white/5" />
+              <div className="h-px bg-muted/50" />
 
               <div className="space-y-2">
                 <Label>Fréquence (GHz)</Label>
@@ -121,8 +133,8 @@ export default function SimulationPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>Modèle d'Antenne</Label>
-                <select className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+                <Label>Modèle d&apos;Antenne</Label>
+                <select className="w-full bg-muted/50 border border-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
                   <option>ValuLine 2ft (36 dBi)</option>
                   <option>ValuLine 4ft (42 dBi)</option>
                   <option>High Performance 6ft (45 dBi)</option>
@@ -142,7 +154,7 @@ export default function SimulationPage() {
               </div>
               <div>
                 <p className="text-sm font-bold text-emerald-500">Liaison Possible</p>
-                <p className="text-xs text-slate-400 mt-1">LOS dégagé à 100% avec marge de Fresnel suffisante.</p>
+                <p className="text-xs text-muted-foreground mt-1">LOS dégagé à 100% avec marge de Fresnel suffisante.</p>
               </div>
             </div>
           </div>
@@ -151,26 +163,26 @@ export default function SimulationPage() {
         {/* Main Simulation View */}
         <div className="lg:col-span-3 space-y-6">
           {/* Elevation Profile Chart */}
-          <div className="bg-[#0f172a] border border-slate-800 rounded-2xl p-6">
+          <div className="bg-card border border-border rounded-2xl p-6">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-primary/10 rounded-lg">
                   <BarChart className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="font-bold">Profil d'Élévation et Zone de Fresnel</h3>
+                <h3 className="font-bold">Profil d&apos;Élévation et Zone de Fresnel</h3>
               </div>
               <div className="flex gap-4 text-xs">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-1 bg-amber-500 rounded-full" />
-                  <span className="text-slate-400">Sol (Terrain)</span>
+                  <span className="text-muted-foreground">Sol (Terrain)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-0.5 bg-cyan-400 rounded-full" />
-                  <span className="text-slate-400">Ligne de Vue (LOS)</span>
+                  <span className="text-muted-foreground">Ligne de Vue (LOS)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-cyan-400/10 rounded-sm" />
-                  <span className="text-slate-400">Zone de Fresnel</span>
+                  <span className="text-muted-foreground">Zone de Fresnel</span>
                 </div>
               </div>
             </div>
@@ -237,11 +249,11 @@ export default function SimulationPage() {
 
           {/* Quick Results Summary */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-6 bg-[#0f172a] border border-slate-800 rounded-2xl">
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Signal Reçu (RSL)</p>
+            <div className="p-6 bg-card border border-border rounded-2xl">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Signal Reçu (RSL)</p>
               <div className="flex items-end gap-2">
                 <span className="text-3xl font-bold">-48.5</span>
-                <span className="text-slate-400 mb-1">dBm</span>
+                <span className="text-muted-foreground mb-1">dBm</span>
               </div>
               <div className="mt-4 flex items-center gap-2 text-xs text-emerald-500">
                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -249,11 +261,11 @@ export default function SimulationPage() {
               </div>
             </div>
 
-            <div className="p-6 bg-[#0f172a] border border-slate-800 rounded-2xl">
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Disponibilité (Pluie)</p>
+            <div className="p-6 bg-card border border-border rounded-2xl">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Disponibilité (Pluie)</p>
               <div className="flex items-end gap-2">
                 <span className="text-3xl font-bold">99.999</span>
-                <span className="text-slate-400 mb-1">%</span>
+                <span className="text-muted-foreground mb-1">%</span>
               </div>
               <div className="mt-4 flex items-center gap-2 text-xs text-emerald-500">
                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -261,13 +273,13 @@ export default function SimulationPage() {
               </div>
             </div>
 
-            <div className="p-6 bg-[#0f172a] border border-slate-800 rounded-2xl">
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Distance Totale</p>
+            <div className="p-6 bg-card border border-border rounded-2xl">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Distance Totale</p>
               <div className="flex items-end gap-2">
                 <span className="text-3xl font-bold">242.5</span>
-                <span className="text-slate-400 mb-1">km</span>
+                <span className="text-muted-foreground mb-1">km</span>
               </div>
-              <div className="mt-4 flex items-center gap-2 text-xs text-slate-400">
+              <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
                 <MapPin className="w-3 h-3" />
                 DLA - YAO
               </div>
@@ -275,34 +287,34 @@ export default function SimulationPage() {
           </div>
 
           {/* Interference & Path Info */}
-          <div className="bg-[#0f172a] border border-slate-800 rounded-2xl p-6">
+          <div className="bg-card border border-border rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-6">
               <Activity className="w-5 h-5 text-amber-500" />
               <h3 className="font-bold">Analyse du Trajet & Interférences</h3>
             </div>
             
             <div className="space-y-4">
-              <div className="p-4 bg-slate-900/50 rounded-xl border border-white/5 flex items-center justify-between">
+              <div className="p-4 bg-muted/50 rounded-xl border border-border flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center">
                     <Info className="w-5 h-5 text-amber-500" />
                   </div>
                   <div>
                     <p className="text-sm font-medium">Point Critique détecté à 120km</p>
-                    <p className="text-xs text-slate-500">Le relief s'approche à 85% de la 1ère zone de Fresnel. Hauteur pylône recommandée : +5m.</p>
+                    <p className="text-xs text-muted-foreground">Le relief s&apos;approche à 85% de la 1ère zone de Fresnel. Hauteur pylône recommandée : +5m.</p>
                   </div>
                 </div>
                 <Button size="sm" variant="ghost" className="text-primary">Détails</Button>
               </div>
 
-              <div className="p-4 bg-slate-900/50 rounded-xl border border-white/5 flex items-center justify-between">
+              <div className="p-4 bg-muted/50 rounded-xl border border-border flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-cyan-500/10 rounded-full flex items-center justify-center">
                     <Activity className="w-5 h-5 text-cyan-500" />
                   </div>
                   <div>
                     <p className="text-sm font-medium">Saturation Spectrale Faible</p>
-                    <p className="text-xs text-slate-500">Aucune autre liaison entreprise détectée sur la bande 15GHz dans un rayon de 10km.</p>
+                    <p className="text-xs text-muted-foreground">Aucune autre liaison entreprise détectée sur la bande 15GHz dans un rayon de 10km.</p>
                   </div>
                 </div>
                 <Button size="sm" variant="ghost" className="text-primary">Carte</Button>

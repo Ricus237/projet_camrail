@@ -1,97 +1,84 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Cpu, Globe, Layout, ShieldCheck, Zap, BarChart3 } from "lucide-react";
+import { Database, FileText, MapPinned, RadioTower, ShieldCheck, TrainFront } from "lucide-react";
 
 const features = [
   {
-    title: "Précision Locale",
-    description: "Conçu spécifiquement pour le relief et les conditions atmosphériques africaines, assurant une disponibilité de 99,999%.",
-    icon: Globe,
-    color: "text-blue-500",
+    title: "Sites ferroviaires",
+    description:
+      "Suivi local des gares, dépôts, pylônes, points radio et zones techniques qui soutiennent l'exploitation CAMRAIL.",
+    icon: TrainFront,
   },
   {
-    title: "Optimisation par l'IA",
-    description: "Trouvez automatiquement les meilleures fréquences et angles d'inclinaison pour minimiser les interférences.",
-    icon: Cpu,
-    color: "text-cyan-500",
+    title: "Liaisons radio",
+    description:
+      "Calcul de distance, pertes de propagation, niveau reçu et disponibilité pour prioriser les interventions réseau.",
+    icon: RadioTower,
   },
   {
-    title: "Simulation Temps Réel",
-    description: "Calculs de bilan de liaison instantanés et visualisation de la zone de Fresnel lors du déplacement des sites.",
-    icon: Zap,
-    color: "text-yellow-500",
+    title: "Carte opérationnelle",
+    description:
+      "Visualisation des sites et des liaisons autour des corridors ferroviaires, avec statuts et alertes techniques.",
+    icon: MapPinned,
   },
   {
-    title: "Rentabilité",
-    description: "Modèle SaaS conçu pour réduire les coûts de planification pour les opérateurs locaux et les FAI.",
-    icon: BarChart3,
-    color: "text-green-500",
+    title: "Inventaire matériel",
+    description:
+      "Catalogue local des radios, antennes et équipements critiques, avec stock et caractéristiques utiles au terrain.",
+    icon: Database,
   },
   {
-    title: "Conformité Réglementaire",
-    description: "Intégration des normes ART (Cameroun) et UIT pour les interférences et les licences.",
+    title: "Traçabilité",
+    description:
+      "Rapports et historiques prêts à documenter les simulations, les bilans et les décisions d'exploitation.",
+    icon: FileText,
+  },
+  {
+    title: "Données locales",
+    description:
+      "La base SQLite reste sur la machine: aucun service externe n'est requis pour consulter ou préparer les données.",
     icon: ShieldCheck,
-    color: "text-purple-500",
-  },
-  {
-    title: "Interface Intuitive",
-    description: "Fini les logiciels de bureau complexes. Des outils professionnels accessibles depuis n'importe quel navigateur.",
-    icon: Layout,
-    color: "text-pink-500",
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
 export function Features() {
   return (
-    <section id="features" className="py-24 bg-white dark:bg-[#0a0a0a]">
+    <section id="features" className="py-24 bg-background">
       <div className="container">
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6">Conçu pour le futur des Télécoms</h2>
-          <p className="text-slate-500 text-lg">
-            Ne perdez plus de temps avec des outils obsolètes. T.N.T offre un environnement 
-            moderne et collaboratif pour les ingénieurs en radiocommunications.
+        <div className="max-w-3xl mb-14">
+          <p className="text-sm font-bold uppercase tracking-widest text-primary">
+            Poste technique CAMRAIL
+          </p>
+          <h2 className="mt-4 text-3xl md:text-5xl font-bold">
+            De la maquette au pilotage local du réseau
+          </h2>
+          <p className="mt-5 text-muted-foreground text-lg leading-relaxed">
+            CAMRAIL Connect rassemble les données de transmission nécessaires au terrain:
+            sites, liaisons, équipements, calculs RF et rapports.
           </p>
         </div>
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((feature, index) => (
             <motion.div
-              key={index}
-              variants={itemVariants}
-              className="p-8 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 hover:shadow-xl transition-shadow group"
+              key={feature.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.05 }}
+              className="rail-panel rounded-lg p-6 hover:border-primary/40 transition-colors"
             >
-              <div className={`w-12 h-12 rounded-xl bg-white dark:bg-white/10 flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform`}>
-                <feature.icon className={`w-6 h-6 ${feature.color}`} />
+              <div className="w-11 h-11 rounded-md bg-primary/10 flex items-center justify-center mb-5">
+                <feature.icon className="w-5 h-5 text-primary" />
               </div>
-              <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
-              <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
+              <h3 className="text-lg font-bold mb-3">{feature.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
                 {feature.description}
               </p>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
