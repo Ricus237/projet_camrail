@@ -1,0 +1,6 @@
+*.sqlite
+*.sqlite-*
+!.gitignore
+!README.md
+!schema.sql
+!seed.mjs

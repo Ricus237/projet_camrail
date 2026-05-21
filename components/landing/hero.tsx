@@ -1,95 +1,89 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { ArrowRight, Signal, Zap } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { ArrowRight, Gauge, MapPin, RadioTower } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const stats = [
+  { label: "Stagiare en Transmissions", value: "Vanessa" },
+  { label: "Stagiare en Transmissions", value: "Leslie" },
+  { label: "Base locale", value: "Camrail" },
+];
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden hero-gradient">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] animate-pulse delay-700" />
+    <section className="relative min-h-[92vh] overflow-hidden flex items-end pt-24">
+      <Image
+        src="/images/camrail-train-hero.jpg"
+        alt="Train CAMRAIL sur le réseau ferroviaire camerounais"
+        fill
+        priority
+        className="object-cover"
+      />
+      <div className="absolute inset-0 camrail-hero-overlay" />
+
+      <div className="container relative z-10 pb-16 md:pb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="max-w-4xl text-white"
+        >
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/12 px-4 py-2 text-sm font-medium text-white backdrop-blur-md">
+            <RadioTower className="w-4 h-4 text-primary" />
+            Supervision locale des transmissions ferroviaires
+          </div>
+
+          <h1 className="mt-8 text-5xl md:text-7xl font-bold tracking-tight">
+            CAMRAIL Connect
+          </h1>
+          <p className="mt-6 max-w-2xl text-lg md:text-xl leading-relaxed text-white/86">
+            Un poste de travail local pour suivre les sites radio, simuler les liaisons,
+            contrôler les équipements et préparer les rapports techniques du réseau
+            ferroviaire CAMRAIL.
+          </p>
+
+          <div className="mt-8 flex flex-col sm:flex-row gap-4">
+            <Button size="lg" className="h-12 px-8 text-base font-semibold group" asChild>
+              <Link href="/dashboard">
+                Ouvrir le dashboard
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="h-12 px-8 text-base font-semibold bg-white/10 text-white border-white/30 hover:bg-white/20"
+              asChild
+            >
+              <Link href="#about">Découvrir CAMRAIL</Link>
+            </Button>
+          </div>
+
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl">
+            {stats.map((item) => (
+              <div
+                key={item.label}
+                className="rounded-md border border-white/20 bg-white/12 p-4 backdrop-blur-md"
+              >
+                <p className="text-2xl font-bold">{item.value}</p>
+                <p className="text-sm text-white/70">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
 
-      <div className="container relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center text-left">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-cyan-400 mb-6"
-            >
-              <Zap className="w-4 h-4" />
-              <span>Planification de Transmission Nouvelle Génération</span>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6"
-            >
-              T.N.T: Planification <span className="text-primary">RF de Précision</span> <br />
-              pour les Réseaux Africains
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="max-w-xl text-lg text-slate-400 mb-10"
-            >
-              Simulez vos liaisons hertziennes, analysez les interférences et optimisez votre 
-              infrastructure de transmission avec la plateforme d'ingénierie RF la plus avancée. 
-              Adapté aux défis locaux.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center gap-4"
-            >
-              <Button size="lg" className="h-12 px-8 text-base font-semibold group w-full sm:w-auto" asChild>
-                <Link href="/dashboard">
-                  Commencer <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="h-12 px-8 text-base font-semibold text-white border-white/20 hover:bg-white/5 w-full sm:w-auto" asChild>
-                <Link href="#demo">Voir la Démo</Link>
-              </Button>
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative hidden lg:block"
-          >
-            <div className="absolute inset-0 bg-primary/20 rounded-full blur-[100px] animate-pulse" />
-            <div className="relative glass p-4 rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
-              <img 
-                src="/images/about-tower.png" 
-                alt="Telecom Tower Planning" 
-                className="rounded-2xl w-full h-auto object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/80 via-transparent to-transparent" />
-            </div>
-          </motion.div>
-        </div>
+      <div className="absolute bottom-5 right-5 z-10 hidden md:flex items-center gap-3 rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-foreground shadow-lg">
+        <Gauge className="w-4 h-4 text-primary" />
+        Version 1.0.1
       </div>
-      
-      {/* Decorative Wave/Mesh */}
-      <div className="absolute bottom-0 left-0 w-full h-64 bg-gradient-to-t from-[#0f172a] to-transparent" />
+      <div className="absolute bottom-5 left-5 z-10 hidden xl:flex items-center gap-2 text-xs text-white/70">
+        <MapPin className="w-4 h-4" />
+        Réseau national du Cameroun
+      </div>
     </section>
   );
 }
