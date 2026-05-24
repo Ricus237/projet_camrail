@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import {
@@ -22,6 +23,7 @@ import {
   Cell,
 } from "recharts";
 import { Button } from "@/components/ui/button";
+import { NetworkMap } from "@/components/dashboard/network-map";
 import { cn } from "@/lib/utils";
 import type { DashboardOverview, LinkStatus } from "@/lib/local-db";
 
@@ -79,7 +81,9 @@ export function DashboardClient({ overview }: DashboardClientProps) {
             État de votre infrastructure de transmission locale.
           </p>
         </div>
-        <Button className="bg-primary text-primary-foreground">Nouvelle Liaison</Button>
+        <Button className="bg-primary text-primary-foreground" asChild>
+          <Link href="/dashboard/links">Nouvelle Liaison</Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -124,18 +128,11 @@ export function DashboardClient({ overview }: DashboardClientProps) {
               <span className="text-xs text-muted-foreground">Données locales</span>
             </div>
           </div>
-          <div className="flex-1 relative bg-muted/50 flex items-center justify-center">
-            <div className="absolute inset-0 opacity-40 bg-[linear-gradient(90deg,hsl(var(--border))_1px,transparent_1px),linear-gradient(0deg,hsl(var(--border))_1px,transparent_1px)] bg-[size:42px_42px]" />
-            <div className="relative z-10 text-center">
-              <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground font-medium italic">
-                Carte réseau - intégration Leaflet à finaliser
-              </p>
-              <p className="text-xs text-muted-foreground mt-2">
-                {overview.totalSites} sites et {overview.recentLinks.length} liaisons chargés
-              </p>
-            </div>
-          </div>
+          <NetworkMap
+            sites={overview.sites}
+            links={overview.recentLinks}
+            className="flex-1 min-h-[400px]"
+          />
         </div>
 
         <div className="bg-card border border-border rounded-xl p-6 flex flex-col">
@@ -186,8 +183,8 @@ export function DashboardClient({ overview }: DashboardClientProps) {
       <div className="bg-card border border-border rounded-xl overflow-hidden">
         <div className="p-4 border-b border-border flex items-center justify-between">
           <h3 className="font-bold">Liaisons Récentes</h3>
-          <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">
-            Voir toutes les liaisons
+          <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" asChild>
+            <Link href="/dashboard/links">Voir toutes les liaisons</Link>
           </Button>
         </div>
         <div className="overflow-x-auto">
@@ -230,12 +227,13 @@ export function DashboardClient({ overview }: DashboardClientProps) {
                     </span>
                   </td>
                   <td className="p-4 text-right">
-                    <button
+                    <Link
+                      href={`/dashboard/links?focus=${encodeURIComponent(link.id)}`}
                       className="text-muted-foreground hover:text-foreground"
                       aria-label={`Options pour ${link.id}`}
                     >
                       <MoreVertical className="w-4 h-4" />
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               ))}

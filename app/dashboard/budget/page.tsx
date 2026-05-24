@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getLinks } from "@/lib/local-db";
+import { exportBudgetAction, recalculateBudgetAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -24,9 +25,18 @@ export default async function BudgetPage() {
             Détails précis des gains et pertes de signal sur le trajet radio.
           </p>
         </div>
-        <Button className="bg-primary text-primary-foreground">
-          <Download className="w-4 h-4 mr-2" /> Exporter le Bilan
-        </Button>
+        {link ? (
+          <form action={exportBudgetAction}>
+            <input type="hidden" name="linkId" value={link.id} />
+            <Button type="submit" className="bg-primary text-primary-foreground">
+              <Download className="w-4 h-4 mr-2" /> Exporter le Bilan
+            </Button>
+          </form>
+        ) : (
+          <Button className="bg-primary text-primary-foreground" disabled>
+            <Download className="w-4 h-4 mr-2" /> Exporter le Bilan
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -60,9 +70,14 @@ export default async function BudgetPage() {
               </div>
             </div>
 
-            <Button className="w-full mt-4 bg-primary/20 text-primary hover:bg-primary/30 border border-primary/30">
-              Recalculer
-            </Button>
+            <form action={recalculateBudgetAction}>
+              <Button
+                type="submit"
+                className="w-full mt-4 bg-primary/20 text-primary hover:bg-primary/30 border border-primary/30"
+              >
+                Recalculer
+              </Button>
+            </form>
           </div>
         </div>
 

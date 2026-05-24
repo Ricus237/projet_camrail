@@ -61,6 +61,18 @@ export type Report = {
   createdAt: string;
 };
 
+export type Simulation = {
+  id: string;
+  linkId: string;
+  fsplDb: number;
+  rslDbm: number;
+  fadeMarginDb: number;
+  fresnelClearancePct: number;
+  availabilityPct: number;
+  notes: string | null;
+  createdAt: string;
+};
+
 export type DashboardOverview = {
   totalSites: number;
   activeLinks: number;
@@ -369,6 +381,33 @@ export async function getLinks(limit?: number) {
   );
 }
 
+export async function getLink(id: string) {
+  return get<NetworkLink>(
+    `
+      SELECT
+        links.id,
+        links.site_a_id AS siteAId,
+        site_a.name AS siteAName,
+        links.site_b_id AS siteBId,
+        site_b.name AS siteBName,
+        links.frequency_ghz AS frequencyGhz,
+        links.tx_power_dbm AS txPowerDbm,
+        links.antenna_gain_dbi AS antennaGainDbi,
+        links.cable_loss_db AS cableLossDb,
+        links.status,
+        links.distance_km AS distanceKm,
+        links.fspl_db AS fsplDb,
+        links.rsl_dbm AS rslDbm,
+        links.availability_pct AS availabilityPct
+      FROM links
+      INNER JOIN sites AS site_a ON site_a.id = links.site_a_id
+      INNER JOIN sites AS site_b ON site_b.id = links.site_b_id
+      WHERE links.id = ?
+    `,
+    [id],
+  );
+}
+
 export async function createLink(input: LinkInput) {
   const budget = await buildLinkBudget(input);
   const id = input.id?.trim() || createRecordId("L", `${budget.siteA.name}-${budget.siteB.name}`);
@@ -458,11 +497,13 @@ export async function recalculateLinks() {
 }
 
 export async function saveSimulationReport(linkId: string) {
-  const link = (await getLinks()).find((item) => item.id === linkId);
+  const link = await getLink(linkId);
 
   if (!link) {
     throw new Error("Link not found");
   }
+
+  await createSimulationFromLink(linkId, "Simulation enregistree depuis le dashboard local.");
 
   return createReport({
     title: `Simulation ${link.siteAName} - ${link.siteBName}`,
@@ -470,6 +511,61 @@ export async function saveSimulationReport(linkId: string) {
     author: "CAMRAIL Connect",
     linkId,
   });
+}
+
+export async function createSimulationFromLink(linkId: string, notes?: string) {
+  const link = await getLink(linkId);
+
+  if (!link) {
+    throw new Error("Link not found");
+  }
+
+  const id = createRecordId("SIM", link.id);
+  const fadeMarginDb = Math.round(Math.max(0, link.rslDbm + 80) * 10) / 10;
+  const fresnelClearancePct =
+    link.status === "Alert" ? 82 : link.status === "Maintenance" ? 90 : 100;
+
+  run(
+    `
+      INSERT INTO simulations
+        (id, link_id, fspl_db, rsl_dbm, fade_margin_db, fresnel_clearance_pct, availability_pct, notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    [
+      id,
+      link.id,
+      link.fsplDb,
+      link.rslDbm,
+      fadeMarginDb,
+      fresnelClearancePct,
+      link.availabilityPct,
+      notes ?? null,
+    ],
+  );
+
+  return id;
+}
+
+export async function getLatestSimulation(linkId: string) {
+  return get<Simulation>(
+    `
+      SELECT
+        id,
+        link_id AS linkId,
+        fspl_db AS fsplDb,
+        rsl_dbm AS rslDbm,
+        fade_margin_db AS fadeMarginDb,
+        fresnel_clearance_pct AS fresnelClearancePct,
+        availability_pct AS availabilityPct,
+        notes,
+        created_at AS createdAt
+      FROM simulations
+      WHERE link_id = ?
+      ORDER BY created_at DESC
+      LIMIT 1
+    `,
+    [linkId],
+  );
 }
 
 export async function getReports() {
@@ -574,6 +670,21 @@ export async function updateUserProfile(input: {
         updated_at = CURRENT_TIMESTAMP
     `,
     [id, input.name, input.email, input.role, input.location],
+  );
+}
+
+export async function updatePasswordMarker() {
+  const existing = await getUserProfile();
+  const id = existing?.id ?? "USR-LOCAL-001";
+  const marker = `local-updated-${new Date().toISOString()}`;
+
+  run(
+    `
+      UPDATE users
+      SET password_hash = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `,
+    [marker, id],
   );
 }
 

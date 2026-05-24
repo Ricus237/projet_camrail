@@ -156,3 +156,23 @@
 .rail-soft {
   @apply bg-muted/50 border border-border;
 }
+
+.camrail-map {
+  background:
+    linear-gradient(90deg, hsl(var(--border) / 0.42) 1px, transparent 1px),
+    linear-gradient(0deg, hsl(var(--border) / 0.42) 1px, transparent 1px),
+    hsl(var(--muted));
+  background-size: 42px 42px;
+}
+
+.camrail-map .leaflet-control-container {
+  color: hsl(var(--foreground));
+}
+
+.camrail-map .leaflet-popup-content-wrapper,
+.camrail-map .leaflet-popup-tip {
+  background: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 16px 40px hsl(var(--foreground) / 0.12);
+}
