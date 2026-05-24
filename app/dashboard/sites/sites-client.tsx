@@ -15,8 +15,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NetworkMap } from "@/components/dashboard/network-map";
 import { cn } from "@/lib/utils";
-import type { Site, SiteStatus } from "@/lib/local-db";
+import type { NetworkLink, Site, SiteStatus } from "@/lib/local-db";
 import { createSiteAction, deleteSiteAction, updateSiteAction } from "./actions";
 
 const statusLabels: Record<SiteStatus, string> = {
@@ -28,27 +29,40 @@ const statusLabels: Record<SiteStatus, string> = {
 
 type SitesClientProps = {
   initialSites: Site[];
+  links: NetworkLink[];
 };
 
-export function SitesClient({ initialSites }: SitesClientProps) {
+export function SitesClient({ initialSites, links }: SitesClientProps) {
   const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<SiteStatus | "All">("All");
   const [editingSite, setEditingSite] = useState<Site | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
   const sites = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    if (!normalizedQuery) {
-      return initialSites;
-    }
-
     return initialSites.filter((site) =>
-      [site.id, site.name, site.region, site.towerType, statusLabels[site.status]]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalizedQuery),
+      (!normalizedQuery ||
+        [site.id, site.name, site.region, site.towerType, statusLabels[site.status]]
+          .join(" ")
+          .toLowerCase()
+          .includes(normalizedQuery)) &&
+      (statusFilter === "All" || site.status === statusFilter),
     );
-  }, [initialSites, query]);
+  }, [initialSites, query, statusFilter]);
+
+  function rotateStatusFilter() {
+    const statuses: Array<SiteStatus | "All"> = [
+      "All",
+      "Operational",
+      "Maintenance",
+      "Alert",
+      "Planned",
+    ];
+    const currentIndex = statuses.indexOf(statusFilter);
+    setStatusFilter(statuses[(currentIndex + 1) % statuses.length]);
+  }
 
   return (
     <div className="space-y-6">
@@ -76,11 +90,12 @@ export function SitesClient({ initialSites }: SitesClientProps) {
           />
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="border-border bg-card">
+          <Button variant="outline" className="border-border bg-card" onClick={() => setShowMap(true)}>
             <Globe className="w-4 h-4 mr-2" /> Voir sur Carte
           </Button>
-          <Button variant="outline" className="border-border bg-card">
-            <Filter className="w-4 h-4 mr-2" /> Filtrer
+          <Button variant="outline" className="border-border bg-card" onClick={rotateStatusFilter}>
+            <Filter className="w-4 h-4 mr-2" />{" "}
+            {statusFilter === "All" ? "Tous" : statusLabels[statusFilter]}
           </Button>
         </div>
       </div>
@@ -179,6 +194,7 @@ export function SitesClient({ initialSites }: SitesClientProps) {
                       <button
                         className="p-2 text-muted-foreground hover:text-foreground"
                         aria-label={`Options pour ${site.name}`}
+                        onClick={() => setEditingSite(site)}
                       >
                         <MoreVertical className="w-4 h-4" />
                       </button>
@@ -205,6 +221,24 @@ export function SitesClient({ initialSites }: SitesClientProps) {
             setEditingSite(null);
           }}
         />
+      )}
+      {showMap && (
+        <div className="fixed inset-0 z-[80] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-5xl bg-card border border-border rounded-lg shadow-2xl overflow-hidden">
+            <div className="p-5 border-b border-border flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold">Carte des sites CAMRAIL</h2>
+                <p className="text-sm text-muted-foreground">
+                  {sites.length} sites filtres, {links.length} liaisons locales.
+                </p>
+              </div>
+              <Button type="button" variant="ghost" onClick={() => setShowMap(false)}>
+                Fermer
+              </Button>
+            </div>
+            <NetworkMap sites={sites} links={links} className="h-[560px]" />
+          </div>
+        </div>
       )}
     </div>
   );

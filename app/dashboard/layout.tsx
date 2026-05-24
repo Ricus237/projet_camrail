@@ -89,14 +89,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6">
           <div className="flex items-center gap-4 flex-1">
-            <div className="relative w-64 hidden md:block">
+            <form action="/dashboard/links" className="relative w-64 hidden md:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
+                name="search"
                 placeholder="Rechercher sites, liaisons..."
                 className="w-full bg-muted/40 border border-border rounded-md pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-all"
               />
-            </div>
+            </form>
           </div>
 
           <div className="flex items-center gap-4">
