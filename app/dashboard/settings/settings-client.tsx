@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Bell,
@@ -38,6 +38,7 @@ type SettingsClientProps = {
     spectrumAlertsEnabled: boolean;
     defaultRegion: string;
     distanceUnit: string;
+    googleMapsApiKey?: string;
   };
 };
 
@@ -270,6 +271,12 @@ function DataSection({ dbPath }: { dbPath: string }) {
 }
 
 function SystemSection({ settings }: { settings: SettingsClientProps["settings"] }) {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("camrail_google_maps_api_key", settings.googleMapsApiKey || "googleMapsApiKey");
+    }
+  }, [settings.googleMapsApiKey]);
+
   return (
     <form action={saveSystemPreferencesAction} className="space-y-6">
       <div>
@@ -305,6 +312,20 @@ function SystemSection({ settings }: { settings: SettingsClientProps["settings"]
             <option value="miles">Miles</option>
           </select>
         </label>
+      </div>
+      <div className="space-y-2">
+        <label htmlFor="googleMapsApiKey" className="text-sm font-medium">Clé API Google Maps (facultative)</label>
+        <Input
+          id="googleMapsApiKey"
+          name="googleMapsApiKey"
+          type="password"
+          placeholder="AIzaSy..."
+          defaultValue={settings.googleMapsApiKey}
+          className="bg-background border-border"
+        />
+        <p className="text-xs text-muted-foreground">
+          Utilisée pour l&apos;intégration des fonds de carte Google Maps. Si vide, des serveurs de tuiles libres ou le mode schématique seront utilisés.
+        </p>
       </div>
       <div className="flex justify-end">
         <Button type="submit">

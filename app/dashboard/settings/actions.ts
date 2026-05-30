@@ -34,6 +34,8 @@ export async function saveNotificationsAction(formData: FormData) {
 export async function saveSystemPreferencesAction(formData: FormData) {
   await setSetting("defaultRegion", readRequired(formData, "defaultRegion"));
   await setSetting("distanceUnit", readRequired(formData, "distanceUnit"));
+  const googleMapsApiKey = formData.get("googleMapsApiKey");
+  await setSetting("googleMapsApiKey", typeof googleMapsApiKey === "string" ? googleMapsApiKey.trim() : "");
   revalidatePath("/dashboard/settings");
 }
 

@@ -12,6 +12,7 @@ export default async function SettingsPage() {
     spectrumAlertsEnabled,
     defaultRegion,
     distanceUnit,
+    googleMapsApiKey,
   ] = await Promise.all([
     getUserProfile(),
     getSetting("twoFactorEnabled"),
@@ -20,6 +21,7 @@ export default async function SettingsPage() {
     getSetting("spectrumAlertsEnabled"),
     getSetting("defaultRegion"),
     getSetting("distanceUnit"),
+    getSetting("googleMapsApiKey"),
   ]);
 
   return (
@@ -27,8 +29,8 @@ export default async function SettingsPage() {
       profile={
         profile ?? {
           id: "USR-LOCAL-001",
-          name: "Paul Tsague",
-          email: "paul.tsague@local.camrail",
+          name: "Tsague",
+          email: "tsague@local.camrail",
           role: "RF Planning Engineer",
           location: "Douala, Cameroun",
         }
@@ -41,6 +43,7 @@ export default async function SettingsPage() {
         spectrumAlertsEnabled: spectrumAlertsEnabled !== "false",
         defaultRegion: defaultRegion ?? "Littoral",
         distanceUnit: distanceUnit ?? "km",
+        googleMapsApiKey: googleMapsApiKey ?? "",
       }}
     />
   );

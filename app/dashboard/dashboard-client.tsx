@@ -119,7 +119,7 @@ export function DashboardClient({ overview }: DashboardClientProps) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="lg:col-span-2 bg-card border border-border rounded-xl overflow-hidden flex flex-col min-h-[400px]">
           <div className="p-4 border-b border-border flex items-center justify-between">
             <h3 className="font-bold">Carte de Transmission</h3>
@@ -135,7 +135,7 @@ export function DashboardClient({ overview }: DashboardClientProps) {
           />
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-6 flex flex-col">
+        {/* <div className="bg-card border border-border rounded-xl p-6 flex flex-col">
           <h3 className="font-bold mb-6">Disponibilité par Région (%)</h3>
           <div className="flex-1 min-h-[300px]">
             {chartReady ? (
@@ -177,7 +177,7 @@ export function DashboardClient({ overview }: DashboardClientProps) {
               <div className="h-full min-h-[300px] rounded-md bg-muted/50" />
             )}
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="bg-card border border-border rounded-xl overflow-hidden">

@@ -58,7 +58,7 @@ function round(value, decimals) {
 }
 
 const users = [
-  ["USR-LOCAL-001", "Paul Tsague", "paul.tsague@local.camrail", "RF Planning Engineer", "Douala, Cameroun", null],
+  ["USR-LOCAL-001", " Tsague", ".tsague@local.camrail", "RF Planning Engineer", "Douala, Cameroun", null],
 ];
 
 const sites = [
@@ -163,8 +163,8 @@ try {
     );
   }
 
-  insertReport.run("REP-2026-001", "Rapport de bilan Douala-Yaounde", "PDF", null, "1.2 MB", "Paul Tsague", "L-DLA-YAO-01", "2026-05-01T08:00:00.000Z");
-  insertReport.run("REP-2026-002", "Analyse interference Littoral", "PDF", null, "2.4 MB", "Paul Tsague", "L-KRI-DLA-03", "2026-04-28T09:30:00.000Z");
+  insertReport.run("REP-2026-001", "Rapport de bilan Douala-Yaounde", "PDF", null, "1.2 MB", " Tsague", "L-DLA-YAO-01", "2026-05-01T08:00:00.000Z");
+  insertReport.run("REP-2026-002", "Analyse interference Littoral", "PDF", null, "2.4 MB", " Tsague", "L-KRI-DLA-03", "2026-04-28T09:30:00.000Z");
   insertReport.run("REP-2026-003", "Inventaire des sites Ouest", "CSV", null, "450 KB", "System", null, "2026-04-15T14:15:00.000Z");
 
   db.exec("COMMIT");

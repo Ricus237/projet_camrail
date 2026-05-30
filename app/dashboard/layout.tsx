@@ -105,7 +105,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="h-8 w-px bg-border mx-1" />
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium">Paul Tsague</p>
+                <p className="text-sm font-medium"> Tsague</p>
                 <p className="text-xs text-muted-foreground">Ingénieur RF</p>
               </div>
               <div className="w-10 h-10 rounded-md bg-muted border border-border overflow-hidden">

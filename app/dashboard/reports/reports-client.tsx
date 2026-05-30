@@ -252,7 +252,7 @@ function ReportFormDialog({
             </label>
             <label className="space-y-2 block">
               <span className="text-sm font-medium">Auteur</span>
-              <Input name="author" defaultValue="Paul Tsague" required />
+              <Input name="author" defaultValue=" Tsague" required />
             </label>
           </div>
           <label className="space-y-2 block">
